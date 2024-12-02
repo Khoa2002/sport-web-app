@@ -1,0 +1,92 @@
+<div class="container">
+    <div class="header-toggle">
+        <a href="#">Categories Manager</a>
+        <div class="separate"></div>
+    </div>
+    <div class="wrap-body">
+        <form id="search-form" action="/admin/search-categories/admin_categories" method="GET">
+            <div class="search-box">
+                <i class='bx bx-search-alt-2'></i>
+                <input type="text" name="value" id="search-input" placeholder="Search for categories...">
+            </div>
+        </form>
+        <div class="container-manager">
+            <div class="table-list-category">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {{#each category}}
+                        <tr>
+                            <td>{{sum @index 1}}</td>
+                            <td>{{this.name}}</td>
+                            {{#if (string_equal this.name 'Khác')}}
+                            <td><a href="#"> </a></td>
+                            {{else}}
+                            <td><a href="#" onclick="deleteCategory('{{this._id}}')">Delete</a></td>
+                            {{/if}}
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="wrap-add-category">
+                <form id="add-category-form" action="/admin/create-category" method="POST">
+                    <div class="table-add-category">
+                        <div class="table-head">
+                            <p class="table-head-title">Add Categories</p>
+                        </div>
+                        <input type="text" id="category-name-input" name="name" placeholder="Add new category...">
+                    </div>
+                    <div class="wrap-button">
+                        <button>Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<form id="delete-category-form" method="POST"></form>
+
+<script>
+
+    var searchCategory = document.getElementById('search-input');
+    var searchForm = document.getElementById('search-form');
+
+    if (searchCategory) {
+        searchCategory.addEventListener('keydown', function (e) {
+            if (e.key == 'Enter') {
+                searchForm.submit;
+            }
+        })
+    }
+
+
+    var addCategoryForm = document.getElementById('add-category-form');
+    var inputCategory = document.getElementById('category-name-input');
+    addCategoryForm.addEventListener('submit', function (e) {
+        if (inputCategory.value == "") {
+            e.preventDefault();
+            alert('vui lòng nhập tên category muốn thêm');
+        }
+    })
+
+    //DELETE CATEGORY
+    var formDeleteCategory = document.getElementById('delete-category-form');
+
+    function deleteCategory(CategoryID) {
+        var result = confirm("Do you want to delete this Category?");
+        if (result) {
+            formDeleteCategory.action = '/admin/delete-category/' + CategoryID + '?_method=DELETE';
+            formDeleteCategory.submit();
+        }
+    }
+
+</script>

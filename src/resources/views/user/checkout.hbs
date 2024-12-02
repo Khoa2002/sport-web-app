@@ -1,0 +1,209 @@
+<div class="container-payment">
+    <div class="payment-body">
+        <h1>THANH TOÁN</h1>
+        <div class="container-address">
+            <div class="payment-contact">
+                <p>Địa chỉ nhận hàng</p>
+                <p class="name">{{address.name}}</p>
+                <p class="phone">{{address.phone}}</p>
+            </div>
+            <div class="payment-address">
+                <p id="address">{{address.full_addr}}</p>
+            </div>
+            <div class="payment-change-address">
+                <div class="address-default">
+                    <span>Mặc định</span>
+                </div>
+                <a href="/user/account/address">THAY ĐỔI</a>
+            </div>
+        </div>
+
+        <div class="container-title">
+            <div class="title-left">
+                <span>Sản phẩm</span>
+            </div>
+            <div class="title-right">
+                <span>Đơn giá</span>
+                <span>Số lượng</span>
+                <span>Thành tiền</span>
+            </div>
+        </div>
+
+        <div class="container-list-item-payment">
+            {{#each cart}}
+            <input type="hidden" id="cartID" name="cartID" value="{{this._id}}">
+            <div class="item-payment">
+                <div class="item-left">
+                    <img src="{{this.productID.img.[0]}}" alt="">
+                    <div class="item-description">
+                        <h2 class="product-name">{{this.productID.name}}</h2>
+                        <div class="item-options">
+                            <span>Phân loại: </span>
+                            <span>{{this.color}}</span>
+                            <span>{{this.size}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="item-right">
+                    <div class="item-result">
+                        <span class="price">{{print_price_down this.productID.price this.productID.discount}} đ</span>
+                        <span class="quantity">{{this.quantity}}</span>
+                        <span class="sum-price">{{print_price (sum_price_product (price_down this.productID.price
+                            this.productID.discount) this.quantity)}} đ</span>
+                    </div>
+                    <div class="item-message">
+                        <span>Lời nhắn: </span>
+                        <input type="text" id="note" placeholder="Lưu ý cho người bán ...">
+                    </div>
+                </div>
+            </div>
+            <div class="item-separate"></div>
+            {{/each}}
+        </div>
+
+        <div class="container-bottom-payment">
+            <div class="bottom-payment-left">
+                <div class="delivery-option">
+                    <span>Loại vận chuyển: </span>
+                    <span class="delivery-choosed">
+                        bình thường
+                        <i class='bx bx-chevron-down'></i>
+                        <ul class="sub-option">
+                            <li>cấp tốc</li>
+                            <li>bình thường</li>
+                        </ul>
+                    </span>
+                </div>
+                <p class="fast-delivery">(hàng sẽ được vận chuyển nhanh trong khoảng 1 đến 2 ngày)</p>
+                <p class="normal-delivery show">(hàng sẽ được vận chuyển trước 5 ngày)</p>
+            </div>
+            <div class="bottom-payment-mid">
+                <div class="Total-price-merchandise">
+                    <p>Tổng tiền hàng: </p>
+                    <span></span>
+                </div>
+                <div class="Price-ship">
+                    <p>Phí vận chuyển: </p>
+                    <span class="Price-ship-price">95.000 đ</span>
+                </div>
+                <div class="Total-checkout">
+                    <p>Tổng thanh toán: </p>
+                    <span class="Total-checkout-price">0 đ</span>
+                </div>
+            </div>
+            <div class="bottom-payment-right">
+                <form id="checkout-form" method="POST">
+                    <input type="hidden" id="userID" name="userID" value="{{user._id}}">
+                    <button class="button-checkout">Đặt Hàng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //Total merchandise price
+    var listPrice = document.querySelectorAll('.sum-price')
+    var totalMerchandise = document.querySelector('.Total-price-merchandise')
+    var priceShip = document.querySelector('.Price-ship-price');
+    var totalPrice = document.querySelector('.Total-checkout-price');
+
+    function PricePayment() {
+        sum = 0;
+        listPrice.forEach(price => {
+            sum += parseInt(price.firstChild.textContent.split('.').join(''));
+        })
+
+        if (totalMerchandise && priceShip && totalPrice) {
+            totalMerchandise.lastChild.textContent = print_price(sum) + ' đ';
+            total = parseInt(priceShip.textContent.split('.').join('')) + sum;
+            totalPrice.textContent = print_price(total) + ' đ';
+        }
+    }
+    PricePayment();
+
+
+    //funciton print price
+    function print_price(price) {
+        var temp;
+        temp = price.toString();
+        var dot = ".";
+        var k = 0;
+        for (var i = temp.length - 1; i >= 0; i--) {
+            ++k;
+            if (k % 3 == 0 && i != 0) {
+                temp = [temp.slice(0, i), dot, temp.slice(i)].join('');
+            }
+        }
+        return temp;
+    }
+
+
+    //Option Delivery 
+    var delivery = document.querySelector('.delivery-choosed').firstChild;
+    var deliveryOption = document.querySelector('.sub-option');
+    var option = deliveryOption.getElementsByTagName('li');
+    var fastDelivery = document.querySelector('.fast-delivery');
+    var normalDelivery = document.querySelector('.normal-delivery');
+
+    for (let li of option) {
+        li.addEventListener('click', function (e) {
+            delivery.textContent = this.textContent;
+            fastDelivery.classList.toggle('show');
+            normalDelivery.classList.toggle('show');
+        })
+    }
+
+    //ORDER
+    var formOrder = document.getElementById('checkout-form');
+    formOrder.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        //Get data
+        //var listCartID_Element = document.querySelectorAll('#cartID');
+        var listCartID = document.querySelectorAll('#cartID');
+        var listNote = document.querySelectorAll('#note');
+        var userID = document.getElementById('userID').value;
+        var address = document.getElementById('address').innerText;
+        var phone = document.querySelector('.phone').innerText;
+        var customerName = document.querySelector('.name').innerText;
+        var cartID = [];
+        var Node = [];
+        var datePurChase = new Date();
+        var DeliverStatus = 0;
+        var DeliverMethod =  document.querySelector('.delivery-choosed').innerText;
+        var TotalPrice = document.querySelector('.Total-checkout-price').innerText.split(' ')[0].split('.').join('');
+
+        //Get cartID, node content
+        for(let i = 0; i < listCartID.length; i++){
+            cartID.push(Object(listCartID[i].value));    
+        }
+        
+        for(let i = 0; i < listNote.length; i++){
+            Node.push(listNote[i].value);    
+        }
+
+        fetch("/user/order", {
+            method: 'POST',
+            body: JSON.stringify({
+                userID: userID,
+                address: address,
+                phone: phone,
+                customerName: customerName,
+                cartID: cartID,
+                note: Node,
+                datePurChase: datePurChase,
+                DeliverStatus: DeliverStatus,
+                DeliverMethod: DeliverMethod,
+                TotalPrice: TotalPrice
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        }).then(function(response){
+            alert('Đặt hàng thành công!')
+            window.location.href = '/user/cart';
+        })
+    })
+
+</script>

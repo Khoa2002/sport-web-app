@@ -1,0 +1,41 @@
+
+<div class="content">
+    <div class="container">
+        <div class="content__title">
+            <h2>x-Sport</h2>
+            <h4>Uy tín, chất lượng là thứ chúng tôi luôn theo đuổi</h4>
+        </div>
+        <form class="content__form form" method="POST" id="form-1">
+            <div class="form-group">
+                <label class="form-lable" for="email">Email</label>
+                <input type="text" class="form-control" required name="email">
+                {{#if data.mes.email}}
+                <small class="form-text">{{data.mes.email}}</small>
+                {{else}}
+                <small class="form-text"></small>
+                {{/if}}
+            </div>
+            <div class="form-group">
+                <label class="form-lable" for="password">Mật khẩu</label>
+                <input type="password" class="form-control" id="password" required name="password">
+                {{#if data.mes.password}}
+                <small class="form-text">{{data.mes.password}}</small>
+                {{else}}
+                <small class="form-text"></small>
+                {{/if}}
+            </div>
+
+            {{#if data.status}}
+            <span class="notify__success">
+                {{data.mes}}
+            </span>
+            {{/if}}
+
+            <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
+            <p class="naviLog text-muted">Bạn đã có tài khoản?
+                <a href="/user/sign_in">Hãy đăng nhập</a>
+            </p>
+        </form>    
+    </div>
+</div>
+

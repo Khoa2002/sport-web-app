@@ -1,0 +1,94 @@
+<div class="cart">
+    <div class="cart-top">
+        <div class="cart-top-left">
+            <div class="wrap-checkbox">
+                <input type="checkbox" id="top-check-all">
+            </div>
+            <span>Sản phẩm</span>
+        </div>
+
+        <div class="cart-top-right">
+            <span>Đơn giá</span>
+            <span>Số lượng</span>
+            <span>Số tiền</span>
+            <span>Thao tác</span>
+        </div>
+    </div>
+
+    <div class="cart-body">
+        <div class="first-line"></div>
+
+        {{#each cart}}
+        <div class="cart-wrap-item">
+            <div class="cart-item">
+
+                <div class="cart-item-left">
+                    <div class="item-left__wrap-chekbox">
+                        <input type="checkbox" name="" id="check-item">
+                    </div>
+                    <img src="{{this.productID.img.[0]}}" alt="">
+                    <div class="description-item">
+                        <a href="/products/{{this.productID.slug}}">
+                            <h3 class="item-name">{{this.productID.name}}</h3>
+                        </a>
+                        <div class="item-option">
+                            <span>Phân loại:</span>
+                            <span class="item-color">{{this.color}}</span>
+                            <span class="item-size">{{this.size}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-item-right">
+                    <div>
+                        <p class="item__old-price">{{print_price this.productID.price}} <span>đ</span></p>
+                        <p class="item__new-price">{{print_price_down this.productID.price this.productID.discount}}
+                            <span>đ</span></p>
+                    </div>
+                    <form id="update-quantity-form" method="POST">
+                        <div class="item__quality">
+                            <input id="cartID" type="hidden" name="_id" value="{{this._id}}">
+                            <button class="decrease" onclick="Minus(this)">
+                                <i class="bx bx-minus"></i>
+                            </button>
+                            <input class="quantity-input" id="textbox-quantity" type="text" role="spinbutton"
+                                aria-valuenow="1" value="{{this.quantity}}" />
+                            <button class="increase" onclick="Plus(this)">
+                                <i class="bx bx-plus"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <h3 class="item-price">{{print_price (sum_price_product (price_down this.productID.price
+                        this.productID.discount) this.quantity)}} <span>đ</span></h3>
+                    <a href="#" class="item-button__delete" onclick="deleteProduct('{{this._id}}')">Xóa</a>
+                </div>
+            </div>
+            <div class="first-line"></div>
+        </div>
+        <form id="form-delete-product" method="POST"></form>
+        {{/each}}
+
+    </div>
+
+    <div class="cart-bottom">
+        <div class="cart-bottom-left">
+            <div class="wrap-bottom__checkbox">
+                <input type="checkbox" class="bottom__checkbox" id="bottom-check-all">
+            </div>
+            <p>Chọn tất cả</p>
+            <button class="bottom-button__delete-all" onclick="unCheckedAll()">
+                Xóa
+            </button>
+        </div>
+
+        <div class="cart-bottom-right">
+            <h4>Tổng thanh toán: </h4>
+            <h2 class="total-price">0 <span>đ</span></h2>
+            <form id="form-payment" action="/user/checkout" method="GET">
+                <button class="button__payment">Thanh toán</button>
+                <input type="hidden" id="inputHidden" name="listID">
+            </form>
+        </div>
+    </div>
+
+</div>
